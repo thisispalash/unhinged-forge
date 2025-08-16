@@ -17,7 +17,7 @@ contract UnhingedTake is
     UnhingedUser
 {
 
-    Take public currentTake;
+    // Take public currentTake;
     uint256 public currentRevision;
 
     mapping(uint256 => Take) public takeHistory;
@@ -26,7 +26,7 @@ contract UnhingedTake is
         __UnhingedUser_initializable(_owner, _admin, _username);
 
         currentRevision = 1;
-        currentTake = Take({
+        Take memory currentTake = Take({
             template: _template,
             revision: 1,
             text: _take
@@ -40,25 +40,21 @@ contract UnhingedTake is
     /** Take Utility Functions */
 
     function updateTake(string memory _take) external override returns (uint256 revision) {
-        return _updateTake(_take, currentTake.template);
+        return _updateTake(_take, takeHistory[currentRevision].template);
     }
 
     function updateTemplate(uint8 _template) external override returns (uint256 revision) {
-        return _updateTake(currentTake.text, _template);
+        return _updateTake(takeHistory[currentRevision].text, _template);
     }
 
     function revise(uint8 _template, string memory _take) external override returns (uint256 revision) {
         return _updateTake(_take, _template);
     }
 
-    /** Battle Functions */
-
-    
-
     function _updateTake(string memory _take, uint8 _template) internal override returns (uint256 revision) {
 
         currentRevision++;
-        currentTake = Take({
+        Take memory currentTake = Take({
             revision: currentRevision,
             template: _template,
             text: _take
@@ -70,4 +66,8 @@ contract UnhingedTake is
 
         return currentRevision;
     }
+
+    /** Battle Functions */
+
+    
 }
