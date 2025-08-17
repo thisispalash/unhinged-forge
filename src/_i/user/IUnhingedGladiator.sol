@@ -8,4 +8,21 @@ pragma solidity ^0.8.22;
  */
 interface IUnhingedGladiator {
 
+    enum BattleOutcome {
+        AGREE_TO_DISAGREE,
+        TIMEOUT_DEFENDER,
+        TIMEOUT_CHALLENGER,
+        TAP_OUT_DEFENDER,
+        TAP_OUT_CHALLENGER
+    }
+
+    function startBattle(string memory _cdc) external returns (uint256 battleId);
+    function endBattle(uint256 _battleId, BattleOutcome _outcome) external;
+    function endBattle(string memory _cdc, BattleOutcome _outcome) external;
+
+    function getBattleId(string memory _cdc) external view returns (uint256);
+    function getBattleRef(uint256 _battleId) external view returns (string memory);
+    function getBattleOutcome(uint256 _battleId) external view returns (BattleOutcome);
+    function getBattleOutcome(string memory _cdc) external view returns (BattleOutcome);
+
 }
