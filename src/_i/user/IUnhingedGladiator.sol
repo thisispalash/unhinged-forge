@@ -8,13 +8,18 @@ pragma solidity ^0.8.22;
  */
 interface IUnhingedGladiator {
 
+    error MustUpdateTake();
+
     enum BattleOutcome {
+        IS_ACTIVE,
         AGREE_TO_DISAGREE,
         TIMEOUT_DEFENDER,
         TIMEOUT_CHALLENGER,
         TAP_OUT_DEFENDER,
         TAP_OUT_CHALLENGER
     }
+
+    function isPaused() external view returns (bool);
 
     function startBattle(string memory _cdc) external returns (uint256 battleId);
     function endBattle(uint256 _battleId, BattleOutcome _outcome) external;

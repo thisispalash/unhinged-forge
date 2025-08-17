@@ -20,14 +20,26 @@ contract UnhingedGladiator is
     mapping(uint256 battleId => string cdc) internal battleRefs;
     mapping(string cdc => uint256 battleId) internal cdcToBattleId;
     mapping(uint256 battleId => BattleOutcome outcome) internal battleOutcomes;
+    bool internal mustUpdateTake;
+
+    modifier takeIsUpdated() {
+        if (mustUpdateTake) {
+            revert MustUpdateTake();
+        }
+        _;
+    }
 
     function __UnhingedGladiator_initializable() public initializer {
         __Pausable_init();
     }
 
+    function isPaused() external view returns (bool) {
+        return paused();
+    }
+
     function startBattle(
         string memory _cdc
-    ) external returns (uint256 battleId) {
+    ) external whenNotPaused takeIsUpdated returns (uint256 battleId) {
         battleCount++;
         battleRefs[battleCount] = _cdc;
         cdcToBattleId[_cdc] = battleCount;
@@ -35,18 +47,20 @@ contract UnhingedGladiator is
     }
 
     function endBattle(uint256 _battleId, BattleOutcome _outcome) external {
+        _checkPunish(_outcome);
         battleOutcomes[_battleId] = _outcome;
+    }
+
+    function endBattle(string memory _cdc, BattleOutcome _outcome) external {
+        _checkPunish(_outcome);
+        uint256 battleId = cdcToBattleId[_cdc];
+        battleOutcomes[battleId] = _outcome;
     }
 
     function getBattleOutcome(
         uint256 _battleId
     ) external view returns (BattleOutcome) {
         return battleOutcomes[_battleId];
-    }
-
-    function endBattle(string memory _cdc, BattleOutcome _outcome) external {
-        uint256 battleId = cdcToBattleId[_cdc];
-        battleOutcomes[battleId] = _outcome;
     }
 
     function getBattleOutcome(
@@ -64,5 +78,37 @@ contract UnhingedGladiator is
 
     function getBattleId(string memory _cdc) external view returns (uint256) {
         return cdcToBattleId[_cdc];
+    }
+
+    function _checkPunish(BattleOutcome _outcome) internal {
+        if (_outcome == BattleOutcome.TIMEOUT_DEFENDER) {
+            _pause();
+        }
+    }
+
+    /**
+     * @notice Defenders are encouraged to tap out rather than let their clock run out
+     * @notice Defenders must update their take if they tap out
+     * @param _outcome Outcome of the battle
+     */
+    function _consequences(BattleOutcome _outcome) internal {
+        if (_outcome == BattleOutcome.TIMEOUT_DEFENDER) {
+            _pause();
+            _endAllBattles();
+        } else if (_outcome == BattleOutcome.TAP_OUT_DEFENDER) {
+            mustUpdateTake = true;
+        }
+    }
+
+    /**
+     * @notice Unimplemented
+     */
+    function _endAllBattles() internal {}
+
+    /**
+     * @notice Users are revived when someone supports their take
+     */
+    function _revive() internal whenPaused {
+        _unpause();
     }
 }
