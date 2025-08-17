@@ -8,7 +8,7 @@ import { OAppUpgradeable, Origin, MessagingFee } from "@layerzerolabs/oapp-evm-u
 import { OAppOptionsType3Upgradeable } from "@layerzerolabs/oapp-evm-upgradeable/contracts/oapp/libs/OAppOptionsType3Upgradeable.sol";
 import { OptionsBuilder } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OptionsBuilder.sol";
 
-import { IUnhingedCommunicatorBase, LZConfig } from "../_i/IUnhingedCommunicatorBase.sol";
+import { IUnhingedCommunicator, LZConfig } from "../_i/IUnhingedCommunicatorBase.sol";
 
 /**
  * @title UnhingedCommunicator
@@ -20,7 +20,7 @@ abstract contract UnhingedCommunicator is
     OwnableUpgradeable,
     OAppUpgradeable,
     OAppOptionsType3Upgradeable,
-    IUnhingedCommunicatorBase
+    IUnhingedCommunicator
 {
 
     LZConfig internal LZ_BASE = LZConfig({
@@ -71,4 +71,10 @@ abstract contract UnhingedCommunicator is
     function _b32ToAddr(bytes32 a) internal pure returns (address) {
         return address(uint160(uint256(a)));
     }
+
+    function handleFallback(bytes4 selector, bytes memory data) internal virtual;
+
+    function handleStartBattle(address defender, address challenger, string memory cdc) internal virtual;
+
+    function handleResolveBattle(uint16 msgType, bytes memory data) internal virtual;
 }
