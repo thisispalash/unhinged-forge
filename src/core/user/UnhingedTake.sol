@@ -70,7 +70,7 @@ contract UnhingedTake is Initializable, ERC721Upgradeable, IUnhingedTake {
     function _updateTake(
         string memory _take,
         uint8 _template
-    ) internal returns (uint256 revision) {
+    ) internal virtual returns (uint256 revision) {
         currentRevision++;
         Take memory currentTake = Take({
             revision: currentRevision,

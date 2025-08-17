@@ -33,7 +33,7 @@ contract UnhingedGladiator is
         __Pausable_init();
     }
 
-    function isPaused() external view returns (bool) {
+    function isPaused() public view returns (bool) {
         return paused();
     }
 

@@ -1,16 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.20;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
-import {UnhingedContractVersion} from "../UnhingedContractVersion.sol";
 import {IUnhingedUser} from "../../_i/user/IUnhingedUser.sol";
+import {UnhingedContractVersion} from "../UnhingedContractVersion.sol";
+import {UnhingedTake} from "./UnhingedTake.sol";
 
 /**
  * @title UnhingedUserCore
@@ -20,76 +17,43 @@ import {IUnhingedUser} from "../../_i/user/IUnhingedUser.sol";
 abstract contract UnhingedUserCore is
     Initializable,
     OwnableUpgradeable,
-    ERC721Upgradeable,
-    PausableUpgradeable,
     ReentrancyGuardUpgradeable,
     UnhingedContractVersion,
-    IUnhingedUser
+    IUnhingedUser,
+    UnhingedTake
 {
-
-    IERC20 public constant USDC = IERC20(0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913); // USDC on Base
-    uint256 public constant PRICE = 100000; // 0.1 USDC
     address public admin;
-
-    uint256 supporterCount;
-    uint256 revisionNumber;
-    mapping(address _supporter => uint256 revisionNumber) supporters;
+    uint256 public elo;
 
     modifier onlyAdmin() {
         require(msg.sender == admin, InvalidCaller(admin, msg.sender));
         _;
     }
 
-    function __UnhingedUser_initializable(address _owner, address _admin, string memory _username) public initializer nonReentrant {
+    function __UnhingedUserCore_initializable(address _owner, address _admin) public initializer nonReentrant {
         __Ownable_init(_owner);
-        __ERC721_init(_username, _makeSymbol(_username));
-        __Pausable_init();
         __ReentrancyGuard_init();
 
         admin = _admin;
+        elo = 120000; // 2 decimals
     }
 
-    function support(address _supporter) public payable nonReentrant returns(uint256, uint256) {
+    function support(address _supporter) public virtual payable returns(uint256, uint256) {
         
         // Perform checks
         require(
-            USDC.balanceOf(_supporter) >= PRICE, 
+            USDC.balanceOf(_supporter) >= 2*PRICE, 
             EmptySupport(_supporter, USDC.balanceOf(_supporter))
         );
         require(
-            USDC.allowance(_supporter, address(this)) >= PRICE,
+            USDC.allowance(_supporter, address(this)) >= 2*PRICE,
             FalseSupport(_supporter)
         );
 
-
         // Transfer USDC
         USDC.transferFrom(_supporter, address(this), PRICE);
-        USDC.transferFrom(address(this), admin, PRICE); // 0.5 USDC goes to admin
+        USDC.transferFrom(_supporter, admin, PRICE);
 
-
-        // Mint new token / register support, and update
-        supporterCount++;
-        _safeMint(_supporter, supporterCount);
-
-        emit NewSupporter(_supporter, supporterCount, revisionNumber);
-        supporters[_supporter] = revisionNumber;
-
-        return (supporterCount, revisionNumber);
-
+        return _support(_supporter);
     }
-
-    function pause() public onlyAdmin {
-        _pause();
-    }
-
-    function unpause() public onlyAdmin {
-        _unpause();
-    }
-
-    function _updateTake(string memory _take, uint8 _template) internal virtual returns (uint256 revision);
-
-    function _makeSymbol(string memory _username) internal pure returns (string memory) {
-        return string(abi.encode(_username, ".unhinged"));
-    }
-
 }

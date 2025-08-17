@@ -8,30 +8,22 @@ pragma solidity ^0.8.20;
  */
 interface IUnhingedUser {
 
-    /**
-     * Error caused when the Supporter has insufficient USDC balance to support
-     */
-    error EmptySupport(address supporter, uint256 balance);
-
-    /**
-     * Error caused when the Supporter has not approved USDC for transfer
-     */
-    error FalseSupport(address supporter);
 
     /**
      * Error caused when a function expects a certain caller, but the actual caller is different
      */
     error InvalidCaller(address expected, address actual);
 
-
     /**
-     * Emitted when there is a new mint of a take
+     * Initializes the user
      * 
-     * @param supporter Address of the account minting a take
-     * @param supportNumber Equivalent to token ID
-     * @param revision Revision number of the take
+     * @param _admin The admin of the user
+     * @param _owner The owner of the user
+     * @param _username The username of the user
+     * @param _take The take of the user
+     * @param _template The template of the user
      */
-    event NewSupporter(address indexed supporter, uint256 indexed supportNumber, uint256 indexed revision);
+    function initialize(address _admin, address _owner, string memory _username, string memory _take, uint8 _template) external;
 
     /**
      * 
