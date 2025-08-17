@@ -1,26 +1,25 @@
 // SPDX-License-Identifier: Apache-2.0
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.22;
 
-import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
-import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
-import {ReentrancyGuardUpgradeable} from "@openzeppelin/contracts-upgradeable/utils/ReentrancyGuardUpgradeable.sol";
-import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import {IUnhingedTake} from "../../_i/user/IUnhingedTake.sol";
 
-import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+/**
+ * @title UnhingedTake
+ * @author @isthispalash
+ * @notice Functions that manage the spicy takes and related storage
+ */
+contract UnhingedTake is IUnhingedTake {
 
-import {IUnhingedTake} from "./_i/IUnhingedTake.sol";
-import {UnhingedUser} from "./core/UnhingedUser.sol";
-
-contract UnhingedTake is 
-    IUnhingedTake,
-    UnhingedUser
-{
-
-    // Take public currentTake;
     uint256 public currentRevision;
-
     mapping(uint256 => Take) public takeHistory;
+
+    uint256 public elo;
+    uint256 public battleCount;
+    mapping(uint256 battleId => string cdc) public battles; // cdc is the battle contract on Flow Cadence
+
+    uint256 public challengeCount;
+    mapping(uint256 challengeId => string cdc) public challenges;
+
 
     function initialize(string memory _username, string memory _take, uint8 _template, address _admin, address _owner) public initializer nonReentrant {
         __UnhingedUser_initializable(_owner, _admin, _username);

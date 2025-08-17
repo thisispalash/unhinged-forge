@@ -9,10 +9,15 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import {UnhingedContractVersion} from "./UnhingedContractVersion.sol";
-import {IUnhingedUser} from "../_i/IUnhingedUser.sol";
+import {UnhingedContractVersion} from "../UnhingedContractVersion.sol";
+import {IUnhingedUser} from "../../_i/user/IUnhingedUser.sol";
 
-abstract contract UnhingedUser is
+/**
+ * @title UnhingedUserCore
+ * @author @isthispalash
+ * @notice ERC721 functions for UnhingedUser + Pausable
+ */
+abstract contract UnhingedUserCore is
     Initializable,
     OwnableUpgradeable,
     ERC721Upgradeable,
@@ -23,7 +28,7 @@ abstract contract UnhingedUser is
 {
 
     IERC20 public constant USDC = IERC20(0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913); // USDC on Base
-    uint256 public constant PRICE = 1000000; // 1 USDC
+    uint256 public constant PRICE = 100000; // 0.1 USDC
     address public admin;
 
     uint256 supporterCount;
