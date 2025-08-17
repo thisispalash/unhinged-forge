@@ -8,7 +8,7 @@ import { OAppUpgradeable, Origin, MessagingFee } from "@layerzerolabs/oapp-evm-u
 import { OAppOptionsType3Upgradeable } from "@layerzerolabs/oapp-evm-upgradeable/contracts/oapp/libs/OAppOptionsType3Upgradeable.sol";
 import { OptionsBuilder } from "@layerzerolabs/oapp-evm/contracts/oapp/libs/OptionsBuilder.sol";
 
-import { IUnhingedCommunicator, LZConfig } from "../_i/IUnhingedCommunicatorBase.sol";
+import { IUnhingedCommunicator, LZConfig } from "../_i/IUnhingedCommunicator.sol";
 
 /**
  * @title UnhingedCommunicator
