@@ -15,6 +15,26 @@ interface IUnhingedTake {
     }
 
     /**
+     * Error caused when the Supporter has insufficient USDC balance to support
+     */
+    error EmptySupport(address supporter, uint256 balance);
+
+    /**
+     * Error caused when the Supporter has not approved USDC for transfer
+     */
+    error FalseSupport(address supporter);
+
+    /**
+     * Emitted when there is a new mint of a take
+     * 
+     * @param supporter Address of the account minting a take
+     * @param supportNumber Equivalent to token ID
+     * @param revision Revision number of the take
+     */
+    event NewSupporter(address indexed supporter, uint256 indexed supportNumber, uint256 indexed revision);
+
+
+    /**
      * Emitted when a take is updated
      * 
      * @param revision The revision number of the take
@@ -22,17 +42,6 @@ interface IUnhingedTake {
      * @param text The text of the take
      */
     event TakeUpdated(uint256 indexed revision, uint8 indexed template, string text);
-
-    /**
-     * Initializes the take
-     * 
-     * @param _username The username from twitter
-     * @param _take The text of the take
-     * @param _template The template of the take
-     * @param _owner The owner of the take
-     * @param _admin Admin contract address
-     */
-    function initialize(string memory _username, string memory _take, uint8 _template, address _owner, address _admin) external;
 
     /**
      * Updates the text of the take
@@ -55,4 +64,26 @@ interface IUnhingedTake {
      * @param _take The new text
      */
     function revise(uint8 _template, string memory _take) external returns (uint256 revision);
+
+    /**
+     * Gets the take at a particular revision
+     * 
+     * @param _revision The revision number of the take
+     * @return The take at the revision
+     */
+    function getTake(uint256 _revision) external view returns (Take memory);
+
+    /**
+     * Gets the current revision number of the take
+     * 
+     * @return The current revision number of the take
+     */
+    function getCurrentRevision() external view returns (uint256);
+
+    /**
+     * Gets the number of supporters of the take
+     * 
+     * @return The number of supporters of the take
+     */
+    function getSupporterCount() external view returns (uint256);
 }
