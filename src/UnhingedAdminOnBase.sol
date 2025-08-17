@@ -3,12 +3,10 @@ pragma solidity ^0.8.20;
 
 
 import { UnhingedAdminCore } from "./core/UnhingedAdminCore.sol";
-import { UnhingedCommunicatorOnBase } from "./lz/UnhingedCommunicatorOnBase.sol";
 
-contract UnhingedAdminOnBase is UnhingedAdminCore, UnhingedCommunicatorOnBase {
+contract UnhingedAdminOnBase is UnhingedAdminCore {
 
     constructor(address _owner, address _admin) UnhingedAdminCore(_owner) {
-        admin = _admin;
     }
 
 }
