@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.20;
 
+/**
+ * @title IUnhingedUser
+ * @author @isthispalash
+ * @notice Functions that manage the user operations, to be extended to smart account
+ */
 interface IUnhingedUser {
 
     /**

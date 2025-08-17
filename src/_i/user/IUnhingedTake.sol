@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.20;
 
+/**
+ * @title IUnhingedTake
+ * @author @isthispalash
+ * @notice Functions that manage the spicy takes and related storage
+ */
 interface IUnhingedTake {
 
     struct Take {
@@ -50,6 +55,4 @@ interface IUnhingedTake {
      * @param _take The new text
      */
     function revise(uint8 _template, string memory _take) external returns (uint256 revision);
-
-    function startBattle() external returns (address battle);
 }
