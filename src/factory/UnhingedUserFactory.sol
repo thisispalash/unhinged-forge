@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity ^0.8.20;
 
-import {IUnhingedTake} from "../_i/user/IUnhingedTake.sol";
+import {IUnhingedUser} from "../_i/user/IUnhingedUser.sol";
 
 import {UnhingedFactory, BeaconProxy} from "./UnhingedFactory.sol";
 import {IUnhingedUserFactory} from "../_i/factory/IUnhingedUserFactory.sol";
@@ -24,12 +24,12 @@ contract UnhingedUserFactory is UnhingedFactory, IUnhingedUserFactory {
         
         // Deploy beacon proxy
         bytes memory initData = abi.encodeWithSelector(
-            IUnhingedTake.initialize.selector,
+            IUnhingedUser.initialize.selector,
+            admin,
+            _user,
             _username,
             _take,
-            _template,
-            admin,
-            _user
+            _template
         );
         
         BeaconProxy proxy = new BeaconProxy(address(beacon), initData);
